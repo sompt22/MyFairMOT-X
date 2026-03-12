@@ -4,30 +4,10 @@ from __future__ import print_function
 
 import torch
 
-# from .networks.dlav0 import get_pose_net as get_dlav0
-# from .networks.pose_dla_dcn import get_pose_net as get_dla_dcn
-# from .networks.pose_hrnet import get_pose_net as get_pose_net_hrnet
-# from .networks.resnet_dcn import get_pose_net as get_pose_net_dcn
-# from .networks.resnet_fpn_dcn import get_pose_net as get_pose_net_fpn_dcn
-# from .networks.csp_darknet import get_csp_darknet
-# from .networks.regnet.regnet import RegNet0, RegNet
-# from .networks.efficientdet import EfficientDet
-# from .networks.yolonet import YOLONET
-
 from .networks.yoloX import YOLOXMOT
 
 _model_factory = {
-    # 'dlav0': get_dlav0,  # default DLAup
-    # 'dla': get_dla_dcn,
-    # 'resdcn': get_pose_net_dcn,
-    # 'resfpndcn': get_pose_net_fpn_dcn,
-    # 'hrnet': get_pose_net_hrnet,
-    # 'cspdarknet': get_csp_darknet,
-    # 'regnet0': RegNet0,
-    # 'regnet': RegNet,
-    # 'effdet': EfficientDet,
-    # 'yolonet': YOLONET
-    'yolox' : YOLOXMOT
+    'yolox': YOLOXMOT
 }
 
 
@@ -38,16 +18,9 @@ def create_model(arch, heads=None, head_conv=None, opt=None):
     :param head_conv:
     :return:
     """
-    num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0  # 模型架构
     arch = arch[:arch.find('_')] if '_' in arch else arch
     get_model = _model_factory[arch]
-    if arch in ['regnet0', 'regnet', 'effdet', 'yolonet']:
-        model = get_model(heads=heads, head_convs=head_conv, opt=opt)
-    elif arch in ['yolox']:
-        model = get_model(opt=opt)
-    else:
-        model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)
-
+    model = get_model(opt=opt)
     return model
 
 

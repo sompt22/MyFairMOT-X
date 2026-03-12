@@ -5,14 +5,12 @@ import torch
 import torch.nn.functional as F
 from collections import defaultdict
 
-from lib.models import *
 from lib.models.decode import mot_decode
 from lib.models.model import create_model, load_model
 from lib.models.utils import _tranpose_and_gather_feat
 from lib.tracker import matching
 from lib.tracking_utils.kalman_filter import KalmanFilter
 from lib.tracking_utils.log import logger
-from lib.tracking_utils.utils import *
 from lib.utils.post_process import ctdet_post_process
 from .basetrack import BaseTrack, MCBaseTrack, TrackState
 
