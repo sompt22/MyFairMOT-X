@@ -56,14 +56,14 @@ def run_demo(opt):
     if os.path.isfile(opt.input_video):
         videoname = opt.input_video.split("/")[-1].split(".")[0]
         dataloader = datasets.LoadVideo(opt.input_video)
-        result_root = "/home/fatih/phd/FairCenterMOT/exp/infer/{}".format(videoname)
+        result_root = os.path.join(opt.output_root, 'infer', videoname)
     else:
         videoname = opt.input_video.split("/")[-1]
         if videoname == "":
             videoname = opt.input_video.split("/")[-3]
         else:
-            videoname = opt.input_video.split("/")[-2]   
-        result_root = "/home/fatih/phd/FairCenterMOT/exp/infer/{}".format(videoname)
+            videoname = opt.input_video.split("/")[-2]
+        result_root = os.path.join(opt.output_root, 'infer', videoname)
         dataloader = datasets.LoadImages(opt.input_video)
 
     if not os.path.isdir(result_root):

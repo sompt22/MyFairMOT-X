@@ -225,11 +225,11 @@ class opts(object):
 
         # dataset
         self.parser.add_argument('--data_cfg', type=str,
-                                 default='/home/fatih/phd/FairCenterMOT/src/lib/cfg/mot20-sompt22.json',  # mcmot.json, mcmot_det.json,
+                                 default=os.path.join(os.path.dirname(__file__), 'cfg', 'bdd100k.json'),
                                  help='load data from cfg')
         self.parser.add_argument('--data_dir',
                                  type=str,
-                                 default='/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT')
+                                 default='')
 
         # loss
         self.parser.add_argument('--uncertainty_loss',
@@ -374,19 +374,10 @@ class opts(object):
         print('The output will be saved to ', opt.save_dir)
 
         if opt.resume and opt.load_model == '':
-            model_path = os.path.join('/hpctmp/e0425991/modelrepo/FairMOT-X/', opt.exp_id)
-            opt.load_model = os.path.join(model_path, 'model_last.pth')
-
+            opt.load_model = os.path.join(opt.save_dir, 'model_last.pth')
             if not os.path.exists(opt.load_model):
-                print("No last model to load in modelrepo. Trying opt.save_dir.")
-                
-                opt.load_model = os.path.join(opt.save_dir, 'model_last.pth')
-                
-                if not os.path.exists(opt.load_model):
-                    print("Although --resume was specified, there is no model to load. Training from Epoch 1.")
-                    opt.load_model = ''
-                else:
-                    print("Loaded model from opt.save_dir. Next model will be saved to modelrepo.")
+                print("Although --resume was specified, there is no model to load. Training from Epoch 1.")
+                opt.load_model = ''
         return opt
 
     def update_dataset_info_and_set_heads(self, opt, dataset):

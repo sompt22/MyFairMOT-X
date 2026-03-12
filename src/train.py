@@ -50,7 +50,7 @@ def run(opt):
     print('Creating model...', flush=True)
     model = create_model(opt.arch, opt=opt)
 
-    # 初始化优化器
+    # Initialize optimizer
     optimizer = torch.optim.Adam(model.parameters(), opt.lr)
 
     start_epoch = 0
@@ -106,11 +106,11 @@ def run(opt):
             logger.write('{} {:8f}'.format(k, v))
             if 'time' not in k:
                 logger.write(' | ')
-        str_save_path = f'/home/fatih/phd/FairCenterMOT/exp/{opt.task}/{opt.exp_id}/'
+        str_save_path = opt.save_dir
         if not os.path.isdir(str_save_path):
-            os.mkdirs(str_save_path)
+            os.makedirs(str_save_path)
 
-        if epoch%5 == 0:    
+        if epoch%5 == 0:
             save_model(os.path.join(str_save_path, f'model_{epoch}.pth'), epoch, model, optimizer)
         save_model(os.path.join(str_save_path, 'model_last.pth'), epoch, model, optimizer)
 

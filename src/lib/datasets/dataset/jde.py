@@ -1076,7 +1076,7 @@ class DetDataset(LoadImagesAndLabels):  # for training
                     '.png', '.txt').replace('.jpg', '.txt')
                 for x in self.img_files[ds]]
 
-        tidnumval = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/tid_numval.json"
+        tidnumval = osp.join(root, "tid_numval.json")
         if os.path.exists(tidnumval):
             print("Loading existing validation ID indexes...")
             with open(tidnumval) as json_file:

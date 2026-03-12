@@ -350,8 +350,9 @@ class YOLOMOT(Dataset):  # for training/testing
         assert os.path.isfile(path), 'File not found %s. See %s' % (path, help_url)
         
         # ------ Check for QuickLoad of ID Counts
-        tid_num   = "/home/fatih/phd/mot_dataset/tid_num.json"
-        tidnumval = "/home/fatih/phd/mot_dataset/tid_numval.json"
+        cache_dir = os.path.dirname(os.path.abspath(path))
+        tid_num   = os.path.join(cache_dir, "tid_num.json")
+        tidnumval = os.path.join(cache_dir, "tid_numval.json")
         
         # Get List of Img Files
         with open(path, 'r') as f:

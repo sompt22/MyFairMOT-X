@@ -259,8 +259,8 @@ def main(opt,
     epochnum = int(opt.load_model.split("_")[-1][:-4])
 
     
-    exp_root = f"/home/fatih/phd/FairCenterMOT/exp/val/{exp_name}"
-    result_root = f"/home/fatih/phd/FairCenterMOT/exp/val/{exp_name}/{epochnum}/"
+    exp_root = os.path.join(opt.root_dir, 'exp', 'val', exp_name)
+    result_root = os.path.join(opt.root_dir, 'exp', 'val', exp_name, str(epochnum))
     mkdir_if_missing(exp_root)
     mkdir_if_missing(result_root)
     
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     if opt.kitti_test:
         val_data = "kitti_test/"
     else:
-        val_data = "/home/fatih/phd/mot_dataset/bdd100k/images/val/"
+        val_data = opt.data_dir
 
     seqs = os.listdir(val_data)
 

@@ -874,13 +874,14 @@ class BDD100K(LoadImagesAndLabels):  # for training
         self.height = self.default_input_wh[1]
         
         # ------ Check for QuickLoad of File Indexes
-        img_files = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/img_files.json"
-        lab_files = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/label_files.json"
-        tid_num   = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/tid_num.json"
+        cache_dir = opt.data_dir if opt.data_dir else os.path.dirname(os.path.abspath(__file__))
+        img_files = os.path.join(cache_dir, "img_files.json")
+        lab_files = os.path.join(cache_dir, "label_files.json")
+        tid_num   = os.path.join(cache_dir, "tid_num.json")
 
-        imgfilval = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/img_filesval.json"
-        labfilval = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/label_filesval.json"
-        tidnumval = "/hpctmp/e0425991/datasets/bdd100k/bdd100k/MOT/tid_numval.json"
+        imgfilval = os.path.join(cache_dir, "img_filesval.json")
+        labfilval = os.path.join(cache_dir, "label_filesval.json")
+        tidnumval = os.path.join(cache_dir, "tid_numval.json")
         
         if os.path.exists(lab_files) and not opt.val:
             print("Loading existing img and label indexes...")
