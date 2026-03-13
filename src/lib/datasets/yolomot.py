@@ -462,10 +462,11 @@ class YOLOMOT(Dataset):  # for training/testing
             # ----- Load Image, Labels & Track IDs
             # Label Format: Class, Track ID, Normalised ltwh
             img, (h, w) = load_image(self, idx)
-            resize_ratio = self.img_size[0] / img.shape[0]
+            resize_ratio_h = self.img_size[0] / img.shape[0]
+            resize_ratio_w = self.img_size[1] / img.shape[1]
             if img.shape[:2] != self.img_size:
                 img = cv2.resize(img, self.img_size[::-1])
-            
+
             labels = []
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -474,10 +475,10 @@ class YOLOMOT(Dataset):  # for training/testing
                 # Normaliseded xywh to pixel xyxy format:
                 # For compatibility with random_affine function
                 labels = x.copy()
-                labels[:, 1] = resize_ratio * w * (x[:, 1] - x[:, 3] / 2)      # x1 = ct - w / 2
-                labels[:, 2] = resize_ratio * h * (x[:, 2] - x[:, 4] / 2)      # y1 = ct + h / 2
-                labels[:, 3] = resize_ratio * w * (x[:, 1] + x[:, 3] / 2)      # x2 = ct + w / 2
-                labels[:, 4] = resize_ratio * h * (x[:, 2] + x[:, 4] / 2)      # y2 = ct - h / 2
+                labels[:, 1] = resize_ratio_w * w * (x[:, 1] - x[:, 3] / 2)      # x1 = cx - w / 2
+                labels[:, 2] = resize_ratio_h * h * (x[:, 2] - x[:, 4] / 2)      # y1 = cy - h / 2
+                labels[:, 3] = resize_ratio_w * w * (x[:, 1] + x[:, 3] / 2)      # x2 = cx + w / 2
+                labels[:, 4] = resize_ratio_h * h * (x[:, 2] + x[:, 4] / 2)      # y2 = cy + h / 2
             
             # Now We Load Track IDs
             with warnings.catch_warnings():
@@ -535,7 +536,7 @@ class YOLOMOT(Dataset):  # for training/testing
             det_labels_out[:, [3, 5]] = labels[:, [2, 4]] * self.img_size[0]
             
             # Track IDs to be Returned
-            track_ids_out[:, 1] = torch.from_numpy(track_ids).long()
+            track_ids_out[:, 1] = track_ids.astype(np.int64)
 
         # Write Test Images with bbox to File
         # test_image(img, det_labels_out[:, 2:])
@@ -752,8 +753,8 @@ def random_affine_with_ids(img,
 
     # Translation
     T = np.eye(3)
-    T[0, 2] = random.uniform(-translate, translate) * img.shape[0] + border  # x translation (pixels)
-    T[1, 2] = random.uniform(-translate, translate) * img.shape[1] + border  # y translation (pixels)
+    T[0, 2] = random.uniform(-translate, translate) * img.shape[1] + border  # x translation (pixels)
+    T[1, 2] = random.uniform(-translate, translate) * img.shape[0] + border  # y translation (pixels)
 
     # Shear
     S = np.eye(3)
@@ -813,8 +814,8 @@ def random_affine(img, targets=(), degrees=5, translate=.1, scale=.2, shear=2.5,
 
     # Translation
     T = np.eye(3)
-    T[0, 2] = random.uniform(-translate, translate) * img.shape[0] + border  # x translation (pixels)
-    T[1, 2] = random.uniform(-translate, translate) * img.shape[1] + border  # y translation (pixels)
+    T[0, 2] = random.uniform(-translate, translate) * img.shape[1] + border  # x translation (pixels)
+    T[1, 2] = random.uniform(-translate, translate) * img.shape[0] + border  # y translation (pixels)
 
     # Shear
     S = np.eye(3)

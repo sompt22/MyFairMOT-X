@@ -345,9 +345,9 @@ def random_affine(img, targets=None,
     # Translation
     T = np.eye(3)
     T[0, 2] = (random.random() * 2 - 1) * translate[0] * \
-              img.shape[0] + border  # x translation (pixels)
+              img.shape[1] + border  # x translation (pixels)
     T[1, 2] = (random.random() * 2 - 1) * translate[1] * \
-              img.shape[1] + border  # y translation (pixels)
+              img.shape[0] + border  # y translation (pixels)
 
     # Shear
     S = np.eye(3)

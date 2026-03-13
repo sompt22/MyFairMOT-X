@@ -381,11 +381,11 @@ class GHMC(nn.Module):
 
         self.bins = bins
         self.momentum = momentum
-        self.edges = torch.arange(bins + 1).float().cuda() / bins
+        self.register_buffer('edges', torch.arange(bins + 1).float() / bins)
         self.edges[-1] += 1e-6
 
         if momentum > 0:
-            self.acc_sum = torch.zeros(bins).cuda()
+            self.register_buffer('acc_sum', torch.zeros(bins))
 
         self.use_sigmoid = use_sigmoid
         if not self.use_sigmoid:
@@ -461,11 +461,11 @@ class GHMR(nn.Module):
         super(GHMR, self).__init__()
         self.mu = mu
         self.bins = bins
-        self.edges = torch.arange(bins + 1).float().cuda() / bins
+        self.register_buffer('edges', torch.arange(bins + 1).float() / bins)
         self.edges[-1] = 1e3
         self.momentum = momentum
         if momentum > 0:
-            self.acc_sum = torch.zeros(bins).cuda()
+            self.register_buffer('acc_sum', torch.zeros(bins))
         self.loss_weight = loss_weight
 
     def forward(self, pred, target, label_weight, avg_factor=None):
@@ -598,7 +598,7 @@ class L1Loss(nn.Module):
     def forward(self, output, mask, ind, target):
         pred = _tranpose_and_gather_feat(output, ind)
         mask = mask.unsqueeze(2).expand_as(pred).float()
-        loss = F.l1_loss(pred * mask, target * mask, reduction='elementwise_mean')
+        loss = F.l1_loss(pred * mask, target * mask, reduction='mean')
         return loss
 
 
@@ -613,14 +613,14 @@ class BinRotLoss(nn.Module):
 
 
 def compute_res_loss(output, target):
-    return F.smooth_l1_loss(output, target, reduction='elementwise_mean')
+    return F.smooth_l1_loss(output, target, reduction='mean')
 
 
 # TODO: weight
 def compute_bin_loss(output, target, mask):
     mask = mask.expand_as(output)
     output = output * mask.float()
-    return F.cross_entropy(output, target, reduction='elementwise_mean')
+    return F.cross_entropy(output, target, reduction='mean')
 
 
 def compute_rot_loss(output, target_bin, target_res, mask):
@@ -684,7 +684,7 @@ class TripletLoss(nn.Module):
         # Compute pairwise distance, replace by the official when merged
         dist = torch.pow(inputs, 2).sum(dim=1, keepdim=True).expand(n, n)
         dist = dist + dist.t()
-        dist.addmm_(1, -2, inputs, inputs.t())
+        dist.addmm_(inputs, inputs.t(), beta=1, alpha=-2)
         dist = dist.clamp(min=1e-12).sqrt()  # for numerical stability
         # For each anchor, find the hardest positive and negative
         mask = targets.expand(n, n).eq(targets.expand(n, n).t())
