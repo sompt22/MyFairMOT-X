@@ -201,11 +201,11 @@ class McMotLoss(torch.nn.Module):
                         continue
 
                     # --- 取cls_id对应索引处的特征向量
-                    cls_id_head = output['id'][inds[0], :, inds[2], inds[3]]
+                    cls_id_head = output['id'][inds[0], :, inds[1], inds[2]]
                     cls_id_head = self.emb_scale_dict[cls_id] * F.normalize(cls_id_head)  # n × emb_dim
 
                     # --- 获取target类别
-                    cls_id_target = batch['cls_tr_ids'][inds[0], cls_id, inds[2], inds[3]]
+                    cls_id_target = batch['cls_tr_ids'][inds[0], cls_id, inds[1], inds[2]]
 
                     # ---分类结果
                     # normal FC layers
