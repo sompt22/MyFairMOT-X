@@ -387,24 +387,24 @@ class opts(object):
         :return:
         """
         
-        opt.num_classes = 1
-        
+        opt.num_classes = len(opt.reid_cls_ids.split(','))
+
         yolo_dict = {
             "s" : (0.33, 0.50),
             "m" : (0.67, 0.75),
             "l" : (1.00, 1.00),
             "x" : (1.33, 1.25)
         }
-        
+
         if opt.yolo_depth == -1 or opt.yolo_width == -1:
             print(f"Using Model Scale for YOLOX-{opt.yolo.upper()}")
             opt.yolo_depth, opt.yolo_width = yolo_dict[opt.yolo]
-        
 
-        for reid_id in opt.reid_cls_ids.split(','):
-            if int(reid_id) > opt.num_classes - 1:
-                print('[ERROR]: Configuration conflict of reid_cls_ids and num_classes!')
-                return
+        reid_cls_ids = [int(x) for x in opt.reid_cls_ids.split(',')]
+        if sorted(reid_cls_ids) != list(range(opt.num_classes)):
+            print('[ERROR]: reid_cls_ids must be consecutive starting from 0, '
+                  f'got {reid_cls_ids}')
+            return
             
         opt.nID_dict = dataset.nID_dict
 
