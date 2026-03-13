@@ -32,7 +32,7 @@ class MCTrack(MCBaseTrack):
         self.cls_id = cls_id
 
         # wait activate
-        self._tlwh = np.asarray(tlwh, dtype=np.float)
+        self._tlwh = np.asarray(tlwh, dtype=np.float64)
         self.kalman_filter = None
         self.mean, self.covariance = None, None
         self.is_activated = False
@@ -76,7 +76,7 @@ class MCTrack(MCBaseTrack):
                 if st.state != TrackState.Tracked:
                     multi_mean[i][7] = 0
 
-            multi_mean, multi_covariance = Track.shared_kalman.multi_predict(multi_mean, multi_covariance)
+            multi_mean, multi_covariance = MCTrack.shared_kalman.multi_predict(multi_mean, multi_covariance)
 
             for i, (mean, cov) in enumerate(zip(multi_mean, multi_covariance)):
                 tracks[i].mean = mean
@@ -212,7 +212,7 @@ class Track(BaseTrack):
         """
 
         # wait activate
-        self._tlwh = np.asarray(tlwh, dtype=np.float)
+        self._tlwh = np.asarray(tlwh, dtype=np.float64)
         self.kalman_filter = None
         self.mean, self.covariance = None, None
         self.is_activated = False

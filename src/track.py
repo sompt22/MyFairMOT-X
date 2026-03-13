@@ -210,29 +210,27 @@ def eval_seq(opt,
 
             # collect result
             for cls_id in range(opt.num_classes):
-                results_dict[cls_id].append((frame_id + 1,
+                results_dict[cls_id].append((frame_id,
                                              online_tlwhs_dict[cls_id],
                                              online_ids_dict[cls_id],
                                              online_scores_dict[cls_id]))
 
             # draw track/detection
             if show_image or save_dir is not None:
-                if frame_id > 0:
-                    online_im: ndarray = vis.plot_tracks(image=img0,
-                                                         bbox_dim=(576, 1024),
-                                                         padding=(dw, dh),
-                                                         tlwhs_dict=online_tlwhs_dict,
-                                                         obj_ids_dict=online_ids_dict,
-                                                         num_classes=opt.num_classes,
-                                                         frame_id=frame_id,
-                                                         fps=1.0 / timer.average_time)
+                online_im: ndarray = vis.plot_tracks(image=img0,
+                                                     bbox_dim=(576, 1024),
+                                                     padding=(dw, dh),
+                                                     tlwhs_dict=online_tlwhs_dict,
+                                                     obj_ids_dict=online_ids_dict,
+                                                     num_classes=opt.num_classes,
+                                                     frame_id=frame_id,
+                                                     fps=1.0 / timer.average_time)
+                if show_image:
+                    cv2.imshow('online_im', online_im)
+                if save_dir is not None:
+                    cv2.imwrite(os.path.join(save_dir, '{:05d}.jpg'.format(frame_id)), online_im)
 
-        if frame_id > 0:
-            if show_image:
-                cv2.imshow('online_im', online_im)
-            if save_dir is not None:
-                cv2.imwrite(os.path.join(save_dir, '{:05d}.jpg'.format(frame_id)), online_im)
-        vid_h, vid_w, _ = online_im.shape
+            vid_h, vid_w, _ = img0.shape
         # update frame id
         frame_id += 1
 
@@ -274,8 +272,8 @@ def main(opt,
     
     for seq in tqdm(seqs):
         
-        if seq in ".DS_Store":
-            continue        
+        if seq == ".DS_Store":
+            continue
         
         output_dir = osp.join(data_root, '..', 'outputs', exp_name, seq) if save_images or save_videos else None
         logger.info('start seq: {}'.format(seq))

@@ -112,7 +112,7 @@ class YOLOTrainer(object):
 
             if phase == 'train':
                 loss_actual.backward()
-                if (batch_i + 1) % (batch_actual / opt.batch_size) == 0 or batch_i + 1 == len(data_loader):
+                if (batch_i + 1) % (batch_actual // opt.batch_size) == 0 or batch_i + 1 == len(data_loader):
                     self.optimizer.step()
                     self.optimizer.zero_grad()
 

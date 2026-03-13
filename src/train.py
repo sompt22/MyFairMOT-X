@@ -92,10 +92,10 @@ def run(opt):
             model.head.use_l1 = True
             
         if epoch > 20 and opt.detection_only:
-            model.head.reid_only = True
             model.head.detection_only = False
+            model.head.reid_only = False
             for param in model.backbone.parameters():
-                param.requires_grad = False
+                param.requires_grad = True
 
         # Train an epoch
         log_dict_train, _ = trainer.train(epoch, train_loader)
