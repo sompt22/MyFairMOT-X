@@ -66,7 +66,7 @@ def run(opt):
     train_loader = torch.utils.data.DataLoader(dataset=dataset,
                                                 batch_size=opt.batch_size,
                                                 shuffle=True,
-                                                pin_memory=True,
+                                                pin_memory=torch.cuda.is_available(),
                                                 drop_last=True,
                                                 collate_fn=dataset.collate_fn)
 

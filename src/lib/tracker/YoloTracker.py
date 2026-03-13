@@ -485,14 +485,14 @@ class YOLOTracker(object):
             
             b, c, h, w = img.shape  # Network Input Img Size
             id_vects_dict = defaultdict(list)
-            
+
+            # L2 Normalize Feature Map once before iterating detections
+            reid_map = F.normalize(reid_map, dim=1)
+            reid_dim, h_id_map, w_id_map = reid_map.shape
+
             for i, det in enumerate(dets):
                 # Detections ordered as (x1, y1, x2, y2, obj_conf, class_conf, class_pred)
                 x1, y1, x2, y2, obj_conf, class_conf, cls_id = det
-
-                # L2 Normalize Feature Map
-                reid_map = F.normalize(reid_map, dim=1)
-                reid_dim, h_id_map, w_id_map = reid_map.shape
 
                 # Map Center Point from Net Image Scale to ReID Map Scale
                 center_x = (x1 + x2) / 2
@@ -511,7 +511,7 @@ class YOLOTracker(object):
                 # Get reID Feature Vector
                 id_feat_vect = reid_map[:, center_y, center_x]      # 128 x 1 x 1
                 id_feat_vect = id_feat_vect.squeeze()               # 128
-                id_feat_vect = id_feat_vect.cpu().numpy()
+                id_feat_vect = id_feat_vect.detach().cpu().numpy()
                 id_vects_dict[int(cls_id)].append(id_feat_vect)     # Add feat vect to dict(key: cls_id)
 
             # # ----- Map Detections to Original Input Image Coordinates

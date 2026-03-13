@@ -583,7 +583,9 @@ class YOLOXHead(nn.Module):
             loss = det_loss + reid_loss
         else:
             if self.uncertainty_loss:
-                loss = torch.exp(-self.s_det) * det_loss + torch.exp(-self.s_id) * reid_loss + (self.s_det + self.s_id)
+                s_det = self.s_det.clamp(-10, 10)
+                s_id  = self.s_id.clamp(-10, 10)
+                loss = torch.exp(-s_det) * det_loss + torch.exp(-s_id) * reid_loss + (s_det + s_id)
             else:
                 loss = det_loss + 0.1 * reid_loss
 
@@ -671,7 +673,7 @@ class YOLOXHead(nn.Module):
                 * obj_preds_.float().unsqueeze(0).repeat(num_gt, 1, 1).sigmoid_()
             )
             pair_wise_cls_loss = F.binary_cross_entropy(
-                cls_preds_.sqrt_(), gt_cls_per_image, reduction="none"
+                cls_preds_.clamp(min=1e-8).sqrt_(), gt_cls_per_image, reduction="none"
             ).sum(-1)
         del cls_preds_
 
